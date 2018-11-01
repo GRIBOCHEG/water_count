@@ -1,4 +1,4 @@
-# Realization of the test task.
+# Implementation of the test task.
 
 ------
 

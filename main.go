@@ -36,13 +36,13 @@ type Reading struct {
 	Type     string `json:"type" form:"type"`
 }
 
-// Функция предоставляющая строковое представление структуры
-func (u User) String() string {
+// Функция предоставляющая строковое представление структуры пользователя
+func (u *User) String() string {
 	return fmt.Sprintf("User<%d %s %s %s %s %s>", u.ID, u.Name, u.Surname, u.Address, u.Login, u.Password)
 }
 
-// Функция предоставляющая строковое представление структуры
-func (r Reading) String() string {
+// Функция предоставляющая строковое представление структуры показания
+func (r *Reading) String() string {
 	return fmt.Sprintf("Reading<%d %s %d %s %s>", r.ID, r.Month, r.Quantity, r.User, r.Type)
 }
 
@@ -103,14 +103,14 @@ func ExampleDBModel() string {
 		panic(err)
 	}
 
-	// Select user by primary key.
+	// Получаем юзера по первичному ключу
 	user := &User{ID: user1.ID}
 	err = db.Select(user)
 	if err != nil {
 		panic(err)
 	}
 
-	// Select reading and associated user in one query.
+	// Получаем показание и пользователя в одном запросе
 	reading := new(Reading)
 	err = db.Model(reading).
 		Relation("User").

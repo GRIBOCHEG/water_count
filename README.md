@@ -1,2 +1,5 @@
-# water_count
-Test task
+# Realization of the test task.
+
+------
+
+Simple web app.

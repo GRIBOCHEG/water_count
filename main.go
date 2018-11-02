@@ -40,6 +40,23 @@ func main() {
 		}
 		return c.String(http.StatusOK, "here "+fmt.Sprintln(users))
 	})
+	e.File("/index", "index.html")
+	e.File("/login", "loginform.html")
+	e.File("/userform", "userform.html")
+	e.POST("/login", func(c echo.Context) error {
+		login := c.FormValue("login")
+		password := c.FormValue("password")
+		users, err := getUsers(DB)
+		if err != nil {
+			fmt.Println(err)
+		}
+		for _, usr := range users {
+			if login == usr.Login && password == usr.Password {
+				return c.Redirect(http.StatusOK, "/userform")
+			}
+		}
+		return c.Redirect(http.StatusOK, "/index")
+	})
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

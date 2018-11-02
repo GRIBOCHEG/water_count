@@ -34,6 +34,18 @@ func seedDB(db *pg.DB) error {
 		fmt.Println(err)
 	}
 
+	user2 := &User{
+		Name:     "name",
+		Surname:  "surname",
+		Address:  "address2",
+		Login:    "username",
+		Password: "namesurname",
+	}
+	err = db.Insert(user2)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	err = db.Insert(&Admin{
 		Login:    "admin",
 		Password: "admin",

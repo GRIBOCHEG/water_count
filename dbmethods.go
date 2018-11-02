@@ -9,7 +9,7 @@ import (
 
 // Функция создания структуры и таблиц в бд
 func createSchema(db *pg.DB) error {
-	for _, model := range []interface{}{(*User)(nil), (*Admin)(nil), (*Reading)(nil)} {
+	for _, model := range []interface{}{(*User)(nil), (*Reading)(nil)} {
 		err := db.CreateTable(model, &orm.CreateTableOptions{
 			Temp: true,
 		})
@@ -28,6 +28,7 @@ func seedDB(db *pg.DB) error {
 		Address:  "address",
 		Login:    "login",
 		Password: "password",
+		Type:     "user",
 	}
 	err := db.Insert(user1)
 	if err != nil {
@@ -40,16 +41,20 @@ func seedDB(db *pg.DB) error {
 		Address:  "address2",
 		Login:    "username",
 		Password: "namesurname",
+		Type:     "user",
 	}
 	err = db.Insert(user2)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = db.Insert(&Admin{
+	admin := &User{
+		Name:     "admin",
 		Login:    "admin",
 		Password: "admin",
-	})
+		Type:     "admin",
+	}
+	err = db.Insert(admin)
 	if err != nil {
 		fmt.Println(err)
 	}

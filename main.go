@@ -42,20 +42,20 @@ func main() {
 	})
 	e.File("/index", "index.html")
 	e.File("/login", "loginform.html")
-	e.File("/userform", "userform.html")
 	e.POST("/login", func(c echo.Context) error {
 		login := c.FormValue("login")
 		password := c.FormValue("password")
-		users, err := getUsers(DB)
+		usr, err := getUserByLogin(DB, login)
 		if err != nil {
 			fmt.Println(err)
 		}
-		for _, usr := range users {
-			if login == usr.Login && password == usr.Password {
-				return c.Redirect(http.StatusOK, "/userform")
+		if password == usr.Password {
+			if usr.Type == "admin" {
+				return c.File("adminform.html")
 			}
+			return c.File("userform.html")
 		}
-		return c.Redirect(http.StatusOK, "/index")
+		return c.File("login.html")
 	})
 
 	e.Logger.Fatal(e.Start(":1323"))

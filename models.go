@@ -10,13 +10,7 @@ type User struct {
 	Address  string `json:"address" form:"address"`
 	Login    string `json:"login" form:"login"`
 	Password string `json:"password" form:"password"`
-}
-
-// Admin - модель описывающая администратора
-type Admin struct {
-	ID       int64  `json:"id" form:"id"`
-	Login    string `json:"login" form:"login"`
-	Password string `json:"password" form:"password"`
+	Type     string `json:"type" form"type"`
 }
 
 // Reading - модель описывающая показания счетчика

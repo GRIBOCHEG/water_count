@@ -98,9 +98,17 @@ func main() {
 		}
 		return c.File("loginform.html")
 	})
+
+	e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+		SigningKey:  []byte("secret"),
+		TokenLookup: "cookie:token",
+	}))
+
 	e.POST("/userform", func(c echo.Context) error {
-		name := "first"
-		user, err := getUserByName(DB, name)
+		user := c.Get("user").(*jwt.Token)
+		claims := user.Claims.(jwt.MapClaims)
+		name := claims["name"].(string)
+		usr, err := getUserByName(DB, name)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -108,12 +116,12 @@ func main() {
 		quantity := c.FormValue("quantity")
 		quan, _ := strconv.Atoi(quantity)
 		water := c.FormValue("water")
-		reading, err := getReadingByMonth(DB, user.ID, month, water)
+		reading, err := getReadingByMonth(DB, usr.ID, month, water)
 		if err != nil {
 			fmt.Println(err)
 		}
 		if reading.Quantity == 0 {
-			err = createReadingFromForm(DB, month, water, quan, user.ID)
+			err = createReadingFromForm(DB, month, water, quan, usr.ID)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -123,12 +131,20 @@ func main() {
 	})
 
 	g := e.Group("/admin")
-	g.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
-		if username == "admin" && password == "admin" {
-			return true, nil
+	g.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if err := next(c); err != nil {
+				c.Error(err)
+			}
+			user := c.Get("user").(*jwt.Token)
+			claims := user.Claims.(jwt.MapClaims)
+			isadmin := claims["admin"].(bool)
+			if !isadmin {
+				return c.String(http.StatusUnauthorized, "Unauthorized")
+			}
+			return nil
 		}
-		return false, nil
-	}))
+	})
 	g.GET("/userlist", func(c echo.Context) error {
 		var data string
 		users, err := getOnlyUsers(DB)

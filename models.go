@@ -10,7 +10,7 @@ type User struct {
 	Address  string `json:"address" form:"address"`
 	Login    string `json:"login" form:"login"`
 	Password string `json:"password" form:"password"`
-	Type     string `json:"type" form"type"`
+	UserType string `json:"usertype" form:"usertype"`
 }
 
 // Reading - модель описывающая показания счетчика
@@ -20,7 +20,7 @@ type Reading struct {
 	Quantity int64  `json:"quantity" form:"quantity"`
 	UserID   int64  `json:"userid" form:"userid"`
 	User     *User
-	Type     string `json:"type" form:"type"`
+	Water    string `json:"water" form:"water"`
 }
 
 // Функция предоставляющая строковое представление структуры пользователя
@@ -30,5 +30,5 @@ func (u *User) String() string {
 
 // Функция предоставляющая строковое представление структуры показания
 func (r *Reading) String() string {
-	return fmt.Sprintf("Reading<%d %s %d %s %s>", r.ID, r.Month, r.Quantity, r.User, r.Type)
+	return fmt.Sprintf("Reading<%d %s %d %s %s>", r.ID, r.Month, r.Quantity, r.User, r.Water)
 }

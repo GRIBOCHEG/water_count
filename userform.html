@@ -2,7 +2,26 @@
     <title>Форма</title>
     <body> Прием показаний счетчиков
         <div>
-            <label>Yeah</label>
+            <form action="/userform" method="POST">
+                <div>
+                    <label>Месяц</label>
+                    <input type="text" name="month" id="month">
+                    <br>
+                </div>
+                <div>
+                    <label>Показание счетчика</label>
+                    <input type="text" name="quantity" id="quantity">
+                    <br>
+                </div>
+                <div>
+                    <label>Тариф(горячая или холодная вода)</label>
+                    <input type="text" name="water" id="water" value="hot или cold">
+                    <br>
+                    </div>
+                <div>
+                    <button>Сохранить</button>
+                </div>
+            </form>
         </div>
     </body>
 </html>

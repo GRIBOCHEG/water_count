@@ -28,7 +28,7 @@ func seedDB(db *pg.DB) error {
 		Address:  "address",
 		Login:    "login",
 		Password: "password",
-		Type:     "user",
+		UserType: "user",
 	}
 	err := db.Insert(user1)
 	if err != nil {
@@ -41,7 +41,7 @@ func seedDB(db *pg.DB) error {
 		Address:  "address2",
 		Login:    "username",
 		Password: "namesurname",
-		Type:     "user",
+		UserType: "user",
 	}
 	err = db.Insert(user2)
 	if err != nil {
@@ -52,7 +52,7 @@ func seedDB(db *pg.DB) error {
 		Name:     "admin",
 		Login:    "admin",
 		Password: "admin",
-		Type:     "admin",
+		UserType: "admin",
 	}
 	err = db.Insert(admin)
 	if err != nil {
@@ -63,7 +63,7 @@ func seedDB(db *pg.DB) error {
 		Month:    "month",
 		Quantity: 100,
 		UserID:   user1.ID,
-		Type:     "cold",
+		Water:    "cold",
 	}
 	err = db.Insert(reading1)
 	if err != nil {
@@ -79,6 +79,12 @@ func getUsers(db *pg.DB) ([]User, error) {
 	return users, err
 }
 
+func getOnlyUsers(db *pg.DB) ([]User, error) {
+	var users []User
+	_, err := db.Query(&users, `SELECT * FROM users WHERE usertype = "user"`)
+	return users, err
+}
+
 func getUserByLogin(db *pg.DB, login string) (User, error) {
 	var user User
 	_, err := db.QueryOne(&user, `SELECT * FROM users WHERE login = ?`, login)
@@ -91,22 +97,34 @@ func getUserByID(db *pg.DB, id int) (User, error) {
 	return user, err
 }
 
+func getUserByName(db *pg.DB, name string) (User, error) {
+	var user User
+	_, err := db.QueryOne(&user, `SELECT * FROM users WHERE name = ?`, name)
+	return user, err
+}
+
 func getReadings(db *pg.DB) ([]Reading, error) {
 	var readings []Reading
 	_, err := db.Query(&readings, `SELECT * FROM readings`)
 	return readings, err
 }
 
-func getReadingsByUserID(db *pg.DB, id int) ([]Reading, error) {
+func getReadingsByUserID(db *pg.DB, id int64) ([]Reading, error) {
 	var readings []Reading
 	_, err := db.Query(&readings, `SELECT * FROM readings WHERE userid = ?`, id)
 	return readings, err
 }
 
-func getReadingsByType(db *pg.DB, typ string) ([]Reading, error) {
+func getReadingsByType(db *pg.DB, water string) ([]Reading, error) {
 	var readings []Reading
-	_, err := db.Query(&readings, `SELECT * FROM readings WHERE type = ?`, typ)
+	_, err := db.Query(&readings, `SELECT * FROM readings WHERE water = ?`, water)
 	return readings, err
+}
+
+func getReadingByMonth(db *pg.DB, id int64, month, water string) (Reading, error) {
+	var reading Reading
+	_, err := db.QueryOne(&reading, `SELECT * FROM readings WHERE userid = ?, month = ?, water = ?`, id, month, water)
+	return reading, err
 }
 
 func createUser(db *pg.DB, user *User) error {
@@ -119,7 +137,16 @@ func createUser(db *pg.DB, user *User) error {
 
 func createReading(db *pg.DB, reading *Reading) error {
 	_, err := db.QueryOne(reading, `
-		INSERT INTO readings (month, quantity, userid, type) VALUES (?month, ?quantity, ?userid, ?type)
+		INSERT INTO readings (month, quantity, userid, water) VALUES (?month, ?quantity, ?userid, ?water)
+		RETURNING id
+	`, reading)
+	return err
+}
+
+func createReadingFromForm(db *pg.DB, month, water string, quantity int, userid int64) error {
+	var reading Reading
+	_, err := db.QueryOne(reading, `
+		INSERT INTO readings (month, quantity, userid, water) VALUES (?month, ?quantity, ?userid, ?water)
 		RETURNING id
 	`, reading)
 	return err
@@ -135,7 +162,7 @@ func updateUser(db *pg.DB, user *User) error {
 
 func updateReading(db *pg.DB, reading *Reading) error {
 	_, err := db.QueryOne(reading, `
-		UPDATE readings SET (month, quantity, userid, type) VALUES (?month, ?quantity, ?userid, ?type)
+		UPDATE readings SET (month, quantity, userid, water) VALUES (?month, ?quantity, ?userid, ?water)
 		RETURNING id
 	`, reading)
 	return err

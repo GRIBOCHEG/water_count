@@ -138,9 +138,6 @@ func main() {
 	}))
 	a.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if err := next(c); err != nil {
-				c.Error(err)
-			}
 			user := c.Get("user").(*jwt.Token)
 			claims := user.Claims.(jwt.MapClaims)
 			isadmin := claims["admin"].(bool)
@@ -151,16 +148,16 @@ func main() {
 		}
 	})
 	a.GET("/userlist", func(c echo.Context) error {
-		var data string
-		users, err := getOnlyUsers(DB)
-		if err != nil {
-			fmt.Println(err)
-		}
-		for _, user := range users {
-			id := strconv.Itoa(int(user.ID))
-			data = data + "<br><hr>" + user.String() + "<a href='/admin/readings?id=" + id + "'>Посмотреть</a><br><hr>"
-		}
-		return c.String(http.StatusOK, data)
+		// var data string
+		// users, err := getOnlyUsers(DB)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// }
+		// for _, user := range users {
+		// 	id := strconv.Itoa(int(user.ID))
+		// 	data = data + "<br><hr>" + user.String() + "<a href='/admin/readings?id=" + id + "'>Посмотреть</a><br><hr>"
+		// }
+		return c.String(http.StatusOK, "data")
 	})
 
 	e.Logger.Fatal(e.Start(":1323"))

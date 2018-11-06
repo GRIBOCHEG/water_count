@@ -99,12 +99,13 @@ func main() {
 		return c.File("loginform.html")
 	})
 
-	e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+	u := e.Group("/user")
+	u.Use(middleware.JWTWithConfig(middleware.JWTConfig{
 		SigningKey:  []byte("secret"),
 		TokenLookup: "cookie:token",
 	}))
 
-	e.POST("/userform", func(c echo.Context) error {
+	u.POST("/userform", func(c echo.Context) error {
 		user := c.Get("user").(*jwt.Token)
 		claims := user.Claims.(jwt.MapClaims)
 		name := claims["name"].(string)
@@ -130,8 +131,12 @@ func main() {
 		return c.String(http.StatusOK, "Такое показание уже есть в системе")
 	})
 
-	g := e.Group("/admin")
-	g.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+	a := e.Group("/admin")
+	a.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+		SigningKey:  []byte("secret"),
+		TokenLookup: "cookie:token",
+	}))
+	a.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if err := next(c); err != nil {
 				c.Error(err)
@@ -139,13 +144,13 @@ func main() {
 			user := c.Get("user").(*jwt.Token)
 			claims := user.Claims.(jwt.MapClaims)
 			isadmin := claims["admin"].(bool)
-			if !isadmin {
-				return c.String(http.StatusUnauthorized, "Unauthorized")
+			if isadmin {
+				return next(c)
 			}
-			return nil
+			return echo.ErrUnauthorized
 		}
 	})
-	g.GET("/userlist", func(c echo.Context) error {
+	a.GET("/userlist", func(c echo.Context) error {
 		var data string
 		users, err := getOnlyUsers(DB)
 		if err != nil {

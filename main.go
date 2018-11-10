@@ -47,14 +47,19 @@ func main() {
 	e.File("/index", "index.html")
 	e.File("/login", "loginform.html")
 	e.POST("/login", func(c echo.Context) error {
-		login := c.FormValue("login")
-		password := c.FormValue("password")
-		usr, err := getUserByLogin(DB, login)
+		user := new(User)
+		err := c.Bind(user)
 		if err != nil {
 			fmt.Println(err)
 		}
+		fmt.Println("try to login with", user.Login, user.Password)
+		usr, err := getUserByLogin(DB, user.Login)
+		if err != nil {
+			fmt.Println(err)
+			return echo.ErrUnauthorized
+		}
 
-		if password == usr.Password {
+		if user.Password == usr.Password {
 			if usr.UserType == "admin" {
 				token := jwt.New(jwt.SigningMethodHS256)
 
@@ -74,7 +79,7 @@ func main() {
 				cookie.Value = t
 				cookie.Expires = time.Now().Add(24 * time.Hour)
 				c.SetCookie(cookie)
-				return c.File("adminform.html")
+				return c.String(http.StatusOK, "admin")
 			}
 			token := jwt.New(jwt.SigningMethodHS256)
 
@@ -94,9 +99,9 @@ func main() {
 			cookie.Value = t
 			cookie.Expires = time.Now().Add(24 * time.Hour)
 			c.SetCookie(cookie)
-			return c.File("userform.html")
+			return c.String(http.StatusOK, "user")
 		}
-		return c.File("loginform.html")
+		return echo.ErrUnauthorized
 	})
 
 	u := e.Group("/user")
@@ -148,16 +153,8 @@ func main() {
 		}
 	})
 	a.GET("/userlist", func(c echo.Context) error {
-		// var data string
-		// users, err := getOnlyUsers(DB)
-		// if err != nil {
-		// 	fmt.Println(err)
-		// }
-		// for _, user := range users {
-		// 	id := strconv.Itoa(int(user.ID))
-		// 	data = data + "<br><hr>" + user.String() + "<a href='/admin/readings?id=" + id + "'>Посмотреть</a><br><hr>"
-		// }
-		return c.String(http.StatusOK, "data")
+		// Default golang template to show userlist
+		return c.String(http.StatusOK, "Here'll be list of users")
 	})
 
 	e.Logger.Fatal(e.Start(":1323"))

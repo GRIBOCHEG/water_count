@@ -19,7 +19,6 @@ type Reading struct {
 	Month    string `json:"month" form:"month"`
 	Quantity int64  `json:"quantity" form:"quantity"`
 	UserID   int64  `json:"userid" form:"userid"`
-	User     *User
 	Water    string `json:"water" form:"water"`
 }
 
@@ -30,5 +29,5 @@ func (u *User) String() string {
 
 // Функция предоставляющая строковое представление структуры показания
 func (r *Reading) String() string {
-	return fmt.Sprintf("Reading<%d %s %d %s %s>", r.ID, r.Month, r.Quantity, r.User, r.Water)
+	return fmt.Sprintf("Reading<%d %s %d %d %s>", r.ID, r.Month, r.Quantity, r.UserID, r.Water)
 }

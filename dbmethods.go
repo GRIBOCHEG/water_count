@@ -29,6 +29,7 @@ func seedDB(db *pg.DB) error {
 		Login:    "login",
 		Password: "password",
 		UserType: "user",
+		Init:     false,
 	}
 	err := db.Insert(user1)
 	if err != nil {
@@ -42,6 +43,7 @@ func seedDB(db *pg.DB) error {
 		Login:    "username",
 		Password: "namesurname",
 		UserType: "user",
+		Init:     true,
 	}
 	err = db.Insert(user2)
 	if err != nil {
@@ -53,6 +55,7 @@ func seedDB(db *pg.DB) error {
 		Login:    "admin",
 		Password: "admin",
 		UserType: "admin",
+		Init:     false,
 	}
 	err = db.Insert(admin)
 	if err != nil {
@@ -129,7 +132,7 @@ func getReadingByMonth(db *pg.DB, id int64, month, water string) (Reading, error
 
 func createUser(db *pg.DB, user *User) error {
 	_, err := db.QueryOne(user, `
-		INSERT INTO users (name, surname, address, login, password) VALUES (?name, ?surname, ?address, ?login, ?password)
+		INSERT INTO users (name, surname, address, login, password, init) VALUES (?name, ?surname, ?address, ?login, ?password, ?init)
 		RETURNING id
 	`, user)
 	return err
@@ -154,7 +157,7 @@ func createReadingFromForm(db *pg.DB, month, water string, quantity int, userid 
 
 func updateUser(db *pg.DB, user *User) error {
 	_, err := db.QueryOne(user, `
-		UPDATE users SET (name, surname, address, login, password) VALUES (?name, ?surname, ?address, ?login, ?password)
+		UPDATE users SET (name, surname, address, login, password, init) = (?name, ?surname, ?address, ?login, ?password, ?init) WHERE id = (?id)
 		RETURNING id
 	`, user)
 	return err
@@ -162,7 +165,7 @@ func updateUser(db *pg.DB, user *User) error {
 
 func updateReading(db *pg.DB, reading *Reading) error {
 	_, err := db.QueryOne(reading, `
-		UPDATE readings SET (month, quantity, userid, water) VALUES (?month, ?quantity, ?userid, ?water)
+		UPDATE readings SET (month, quantity, userid, water) = (?month, ?quantity, ?userid, ?water) WHERE id = (?id)
 		RETURNING id
 	`, reading)
 	return err

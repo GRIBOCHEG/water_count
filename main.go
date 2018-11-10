@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -44,8 +43,12 @@ func main() {
 		}
 		return c.String(http.StatusOK, "here "+fmt.Sprintln(users))
 	})
-	e.File("/index", "index.html")
-	e.File("/login", "loginform.html")
+	e.GET("/index", func(c echo.Context) error {
+		return c.File("index.html")
+	})
+	e.GET("/login", func(c echo.Context) error {
+		return c.File("loginform.html")
+	})
 	e.POST("/login", func(c echo.Context) error {
 		user := new(User)
 		err := c.Bind(user)
@@ -81,6 +84,7 @@ func main() {
 				c.SetCookie(cookie)
 				return c.String(http.StatusOK, "admin")
 			}
+
 			token := jwt.New(jwt.SigningMethodHS256)
 
 			// Set claims
@@ -99,6 +103,11 @@ func main() {
 			cookie.Value = t
 			cookie.Expires = time.Now().Add(24 * time.Hour)
 			c.SetCookie(cookie)
+
+			if usr.Init {
+				return c.String(http.StatusOK, "pass")
+			}
+
 			return c.String(http.StatusOK, "user")
 		}
 		return echo.ErrUnauthorized
@@ -110,6 +119,33 @@ func main() {
 		TokenLookup: "cookie:token",
 	}))
 
+	u.GET("/changepass", func(c echo.Context) error {
+		return c.File("changepass.html")
+	})
+	u.POST("/changepass", func(c echo.Context) error {
+		user := c.Get("user").(*jwt.Token)
+		claims := user.Claims.(jwt.MapClaims)
+		name := claims["name"].(string)
+		usr, err := getUserByName(DB, name)
+		if err != nil {
+			fmt.Println(err)
+		}
+		user1 := new(User)
+		err = c.Bind(user1)
+		if err != nil {
+			fmt.Println(err)
+		}
+		usr.Password = user1.Password
+		usr.Init = false
+		err = updateUser(DB, &usr)
+		if err != nil {
+			fmt.Println(err)
+		}
+		return c.String(http.StatusOK, "done")
+	})
+	u.GET("/userform", func(c echo.Context) error {
+		return c.File("userform.html")
+	})
 	u.POST("/userform", func(c echo.Context) error {
 		user := c.Get("user").(*jwt.Token)
 		claims := user.Claims.(jwt.MapClaims)
@@ -118,22 +154,28 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		month := c.FormValue("month")
-		quantity := c.FormValue("quantity")
-		quan, _ := strconv.Atoi(quantity)
-		water := c.FormValue("water")
-		reading, err := getReadingByMonth(DB, usr.ID, month, water)
+
+		reading := new(Reading)
+		err = c.Bind(reading)
 		if err != nil {
 			fmt.Println(err)
 		}
-		if reading.Quantity == 0 {
-			err = createReadingFromForm(DB, month, water, quan, usr.ID)
-			if err != nil {
-				fmt.Println(err)
-			}
-			return c.String(http.StatusOK, "Показание успешно сохранено")
+
+		reading1, err := getReadingByMonth(DB, usr.ID, reading.Month, reading.Water)
+		if err != nil {
+			fmt.Println(err)
 		}
-		return c.String(http.StatusOK, "Такое показание уже есть в системе")
+		if reading1.Quantity == reading.Quantity && reading1.Month == reading.Month && reading1.Water == reading.Water {
+			return c.String(http.StatusOK, "bad")
+		}
+
+		reading.UserID = usr.ID
+		err = createReading(DB, reading)
+		if err != nil {
+			fmt.Println(err)
+		}
+		return c.String(http.StatusOK, "good")
+
 	})
 
 	a := e.Group("/admin")
@@ -152,9 +194,35 @@ func main() {
 			return echo.ErrUnauthorized
 		}
 	})
+	a.GET("/adminform", func(c echo.Context) error {
+		return c.File("adminform.html")
+	})
+	a.GET("/adduser", func(c echo.Context) error {
+		user := new(User)
+		err := c.Bind(user)
+		if err != nil {
+			fmt.Println(err)
+			return c.String(http.StatusOK, "bad")
+		}
+		user.Password = user.Name + user.Surname
+		user.UserType = "user"
+		user.Init = true
+		err = createUser(DB, user)
+		if err != nil {
+			fmt.Println(err)
+			return c.String(http.StatusOK, "bad")
+		}
+		return c.String(http.StatusOK, "good")
+	})
+	a.POST("/adduser", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Yeah")
+	})
 	a.GET("/userlist", func(c echo.Context) error {
 		// Default golang template to show userlist
 		return c.String(http.StatusOK, "Here'll be list of users")
+	})
+	a.GET("/statistics", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Here'll be statistics")
 	})
 
 	e.Logger.Fatal(e.Start(":1323"))

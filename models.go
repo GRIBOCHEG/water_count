@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-// User - модель описывающая пользователя
+// User - модель описывающая пользователя sql:"unique" sql:"pk"
 type User struct {
 	ID       int64  `json:"id" form:"id"`
 	Name     string `json:"name" form:"name"`
@@ -11,6 +11,7 @@ type User struct {
 	Login    string `json:"login" form:"login"`
 	Password string `json:"password" form:"password"`
 	UserType string `json:"usertype" form:"usertype"`
+	Init     bool   `json:"init" form:"init"`
 }
 
 // Reading - модель описывающая показания счетчика

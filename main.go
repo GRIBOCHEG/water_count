@@ -198,6 +198,9 @@ func main() {
 		return c.File("adminform.html")
 	})
 	a.GET("/adduser", func(c echo.Context) error {
+		return c.File("adduser.html")
+	})
+	a.POST("/adduser", func(c echo.Context) error {
 		user := new(User)
 		err := c.Bind(user)
 		if err != nil {
@@ -213,9 +216,6 @@ func main() {
 			return c.String(http.StatusOK, "bad")
 		}
 		return c.String(http.StatusOK, "good")
-	})
-	a.POST("/adduser", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Yeah")
 	})
 	a.GET("/userlist", func(c echo.Context) error {
 		// Default golang template to show userlist

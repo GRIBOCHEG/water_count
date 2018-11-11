@@ -7,9 +7,9 @@
             if (this.readyState == 4) {
               if (this.status == 200) {
                 if (xhttp.responseText == "good") {
-                    alert("good");
+                    alert("Показание успешно сохранено");
                 } else if (xhttp.responseText == "bad") {
-                    alert("bad");
+                    alert("Такое показание уже существует в системе");
                 }
               } else {
                 alert("bitch lasagna!");

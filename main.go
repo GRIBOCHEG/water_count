@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -10,6 +13,14 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
+
+type Template struct {
+	templates *template.Template
+}
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
+}
 
 // DB - Глобальная переменная содержащая подключение к БД
 var DB *pg.DB
@@ -19,6 +30,7 @@ func index(c echo.Context) error {
 }
 
 func main() {
+
 	DB := pg.Connect(&pg.Options{
 		User:     "postgres",
 		Password: "1234",
@@ -34,6 +46,10 @@ func main() {
 	}
 
 	e := echo.New()
+	t := &Template{
+		templates: template.Must(template.ParseGlob("views/*.html")),
+	}
+	e.Renderer = t
 
 	e.GET("/", index)
 	e.GET("/getall", func(c echo.Context) error {
@@ -161,18 +177,11 @@ func main() {
 			fmt.Println(err)
 		}
 
-		reading1, err := getReadingByMonth(DB, usr.ID, reading.Month, reading.Water)
-		if err != nil {
-			fmt.Println(err)
-		}
-		if reading1.Quantity == reading.Quantity && reading1.Month == reading.Month && reading1.Water == reading.Water {
-			return c.String(http.StatusOK, "bad")
-		}
-
 		reading.UserID = usr.ID
 		err = createReading(DB, reading)
 		if err != nil {
 			fmt.Println(err)
+			return c.String(http.StatusOK, "bad")
 		}
 		return c.String(http.StatusOK, "good")
 
@@ -218,11 +227,44 @@ func main() {
 		return c.String(http.StatusOK, "good")
 	})
 	a.GET("/userlist", func(c echo.Context) error {
-		// Default golang template to show userlist
-		return c.String(http.StatusOK, "Here'll be list of users")
+
+		users, err := getOnlyUsers(DB)
+		if err != nil {
+			fmt.Println(err)
+			return c.NoContent(http.StatusBadRequest)
+		}
+
+		return c.Render(http.StatusOK, "users", users)
+	})
+	a.GET("/readinglist/:id", func(c echo.Context) error {
+		userID, err := strconv.Atoi(c.Param("id"))
+		readings, err := getReadingsByUserID(DB, int64(userID))
+		if err != nil {
+			fmt.Println(err)
+			return c.NoContent(http.StatusBadRequest)
+		}
+		return c.Render(http.StatusOK, "readings", readings)
 	})
 	a.GET("/statistics", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Here'll be statistics")
+		return c.File("statistics.html")
+	})
+	a.GET("/consumers/:water", func(c echo.Context) error {
+		var data [3]Data
+		water := c.Param("water")
+		readings, err := getReadingsByTypeAndOrderByQuantity(DB, water)
+		if err != nil {
+			fmt.Println(err)
+		}
+		for i, reading := range readings {
+			user, err := getUserByID(DB, int(reading.UserID))
+			if err != nil {
+				fmt.Println(err)
+			}
+			data[i].Reading = &reading
+			data[i].User = &user
+		}
+		return c.Render(http.StatusOK, "consumers", data)
+
 	})
 
 	e.Logger.Fatal(e.Start(":1323"))

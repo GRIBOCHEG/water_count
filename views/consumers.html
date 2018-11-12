@@ -1,0 +1,11 @@
+{{define "consumers"}}
+<html>
+  <body>
+    <ul>
+      {{range .}}
+      <li>Показание счетчика: {{.Reading.Quantity}}, Месяц: {{.Reading.Month}}, Имя и фамилия пользователя: {{.User.Name}} {{.User.Surname}}</li>
+      {{end}}
+    </ul>
+  </body>
+</html>
+{{ end }}

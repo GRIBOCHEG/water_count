@@ -1,0 +1,11 @@
+{{define "readings"}}
+<html>
+  <body>
+    <ul>
+      {{range .}}
+      <li>Месяц: {{.Month}}, Показание счетчика: {{.Quantity}}, Тариф(вода): {{.Water}}</li>
+      {{end}}
+    </ul>
+  </body>
+</html>
+{{ end }}

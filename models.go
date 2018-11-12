@@ -2,13 +2,18 @@ package main
 
 import "fmt"
 
+type Data struct {
+	Reading *Reading
+	User    *User
+}
+
 // User - модель описывающая пользователя sql:"unique" sql:"pk"
 type User struct {
-	ID       int64  `json:"id" form:"id"`
+	ID       int64  `sql:",pk" json:"id" form:"id"`
 	Name     string `json:"name" form:"name"`
 	Surname  string `json:"surname" form:"surname"`
 	Address  string `json:"address" form:"address"`
-	Login    string `json:"login" form:"login"`
+	Login    string `sql:",unique" json:"login" form:"login"`
 	Password string `json:"password" form:"password"`
 	UserType string `json:"usertype" form:"usertype"`
 	Init     bool   `json:"init" form:"init"`
@@ -16,11 +21,11 @@ type User struct {
 
 // Reading - модель описывающая показания счетчика
 type Reading struct {
-	ID       int64  `json:"id" form:"id"`
-	Month    string `json:"month" form:"month"`
-	Quantity int64  `json:"quantity" form:"quantity"`
-	UserID   int64  `json:"userid" form:"userid"`
-	Water    string `json:"water" form:"water"`
+	ID       int64  `sql:",pk" json:"id" form:"id"`
+	Month    string `sql:"unique:user_month_water" json:"month" form:"month"`
+	Quantity int64  `json:"quantity,,string" form:"quantity"`
+	UserID   int64  `sql:"unique:user_month_water,,notnull" json:"userid,,string" form:"userid"`
+	Water    string `sql:"unique:user_month_water" json:"water" form:"water"`
 }
 
 // Функция предоставляющая строковое представление структуры пользователя

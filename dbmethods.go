@@ -11,7 +11,7 @@ import (
 func createSchema(db *pg.DB) error {
 	for _, model := range []interface{}{(*User)(nil), (*Reading)(nil)} {
 		err := db.CreateTable(model, &orm.CreateTableOptions{
-			Temp: true,
+			Temp: false,
 		})
 		if err != nil {
 			return err
@@ -84,7 +84,7 @@ func getUsers(db *pg.DB) ([]User, error) {
 
 func getOnlyUsers(db *pg.DB) ([]User, error) {
 	var users []User
-	_, err := db.Query(&users, `SELECT * FROM users WHERE usertype = "user"`)
+	_, err := db.Query(&users, `SELECT * FROM users WHERE user_type = ?`, "user")
 	return users, err
 }
 
@@ -112,9 +112,9 @@ func getReadings(db *pg.DB) ([]Reading, error) {
 	return readings, err
 }
 
-func getReadingsByUserID(db *pg.DB, id int64) ([]Reading, error) {
+func getReadingsByUserID(db *pg.DB, userID int64) ([]Reading, error) {
 	var readings []Reading
-	_, err := db.Query(&readings, `SELECT * FROM readings WHERE userid = ?`, id)
+	_, err := db.Query(&readings, `SELECT * FROM readings WHERE user_id = ?`, userID)
 	return readings, err
 }
 
@@ -130,6 +130,12 @@ func getReadingByMonth(db *pg.DB, id int64, month, water string) (Reading, error
 	return reading, err
 }
 
+func getReadingsByTypeAndOrderByQuantity(db *pg.DB, water string) ([]Reading, error) {
+	var readings []Reading
+	_, err := db.Query(&readings, `SELECT * FROM readings WHERE water = ? ORDER BY quantity ASC LIMIT 3`, water)
+	return readings, err
+}
+
 func createUser(db *pg.DB, user *User) error {
 	_, err := db.QueryOne(user, `
 		INSERT INTO users (name, surname, address, login, password, init) VALUES (?name, ?surname, ?address, ?login, ?password, ?init)
@@ -140,7 +146,7 @@ func createUser(db *pg.DB, user *User) error {
 
 func createReading(db *pg.DB, reading *Reading) error {
 	_, err := db.QueryOne(reading, `
-		INSERT INTO readings (month, quantity, userid, water) VALUES (?month, ?quantity, ?userid, ?water)
+		INSERT INTO readings (month, quantity, user_id, water) VALUES (?month, ?quantity, ?user_id, ?water)
 		RETURNING id
 	`, reading)
 	return err

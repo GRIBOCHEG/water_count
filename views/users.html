@@ -1,0 +1,11 @@
+{{define "users"}}
+<html>
+  <body>
+    <ul>
+      {{range .}}
+      <li><a href=/admin/readinglist/{{.ID}}>{{.Name}}</li>
+      {{end}}
+    </ul>
+  </body>
+</html>
+{{ end }}

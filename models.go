@@ -3,8 +3,8 @@ package main
 import "fmt"
 
 type Data struct {
-	Reading *Reading
-	User    *User
+	Rdng Reading
+	Usr  User
 }
 
 // User - модель описывающая пользователя sql:"unique" sql:"pk"

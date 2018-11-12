@@ -252,17 +252,20 @@ func main() {
 		var data [3]Data
 		water := c.Param("water")
 		readings, err := getReadingsByTypeAndOrderByQuantity(DB, water)
+		fmt.Println(readings)
 		if err != nil {
 			fmt.Println(err)
 		}
 		for i, reading := range readings {
 			user, err := getUserByID(DB, int(reading.UserID))
+			fmt.Println(user)
 			if err != nil {
 				fmt.Println(err)
 			}
-			data[i].Reading = &reading
-			data[i].User = &user
+			data[i].Rdng = reading
+			data[i].Usr = user
 		}
+		fmt.Println(data)
 		return c.Render(http.StatusOK, "consumers", data)
 
 	})

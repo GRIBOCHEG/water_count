@@ -1,1 +1,2 @@
-web: pacific-fortress-34415
+web: go build
+./pacific-fortress-34415

@@ -33,7 +33,7 @@ func login(c echo.Context) error {
 			claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
 
 			// Generate encoded token
-			t, err := token.SignedString([]byte("secret"))
+			t, err := token.SignedString(app.Slice)
 			if err != nil {
 				return err
 			}
@@ -54,7 +54,7 @@ func login(c echo.Context) error {
 		claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
 
 		// Generate encoded token
-		t, err := token.SignedString([]byte("secret"))
+		t, err := token.SignedString(app.Slice)
 		if err != nil {
 			return err
 		}

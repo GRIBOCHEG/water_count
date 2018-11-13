@@ -20,7 +20,7 @@ func startServer() {
 }
 
 func router() {
-	app.Echo.GET("/index", func(c echo.Context) error {
+	app.Echo.GET("/", func(c echo.Context) error {
 		return c.File("views/index.html")
 	})
 	app.Echo.GET("/login", func(c echo.Context) error {

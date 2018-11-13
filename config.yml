@@ -1,0 +1,6 @@
+server:
+  debug: true
+  port: ":1323"
+db:
+  user: "postgres"
+  password: "1234"

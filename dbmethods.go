@@ -22,34 +22,44 @@ func createSchema(db *pg.DB) error {
 
 // seedDB - Наполняем дб тестовыми данными
 func seedDB(db *pg.DB) error {
-	user1 := &User{
-		Name:     "first",
-		Surname:  "second",
-		Address:  "address",
-		Login:    "login",
-		Password: "password",
-		UserType: "user",
-		Init:     false,
+	if config.Server.Debug {
+		user1 := &User{
+			Name:     "first",
+			Surname:  "second",
+			Address:  "address",
+			Login:    "login",
+			Password: "password",
+			UserType: "user",
+			Init:     false,
+		}
+		err := db.Insert(user1)
+		if err != nil {
+			fmt.Println(err)
+		}
+		user2 := &User{
+			Name:     "name",
+			Surname:  "surname",
+			Address:  "address2",
+			Login:    "username",
+			Password: "namesurname",
+			UserType: "user",
+			Init:     true,
+		}
+		err = db.Insert(user2)
+		if err != nil {
+			fmt.Println(err)
+		}
+		reading1 := &Reading{
+			Month:    "month",
+			Quantity: 100,
+			UserID:   user1.ID,
+			Water:    "cold",
+		}
+		err = db.Insert(reading1)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
-	err := db.Insert(user1)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	user2 := &User{
-		Name:     "name",
-		Surname:  "surname",
-		Address:  "address2",
-		Login:    "username",
-		Password: "namesurname",
-		UserType: "user",
-		Init:     true,
-	}
-	err = db.Insert(user2)
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	admin := &User{
 		Name:     "admin",
 		Login:    "admin",
@@ -57,22 +67,10 @@ func seedDB(db *pg.DB) error {
 		UserType: "admin",
 		Init:     false,
 	}
-	err = db.Insert(admin)
+	err := db.Insert(admin)
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	reading1 := &Reading{
-		Month:    "month",
-		Quantity: 100,
-		UserID:   user1.ID,
-		Water:    "cold",
-	}
-	err = db.Insert(reading1)
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	return err
 }
 

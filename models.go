@@ -1,11 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"html/template"
+	"io"
 
-type Data struct {
-	Rdng Reading
-	Usr  User
-}
+	"github.com/go-pg/pg"
+
+	"github.com/labstack/echo"
+)
 
 // User - модель описывающая пользователя sql:"unique" sql:"pk"
 type User struct {
@@ -26,6 +29,39 @@ type Reading struct {
 	Quantity int64  `json:"quantity,,string" form:"quantity"`
 	UserID   int64  `sql:"unique:user_month_water,,notnull" json:"userid,,string" form:"userid"`
 	Water    string `sql:"unique:user_month_water" json:"water" form:"water"`
+}
+
+type Data struct {
+	Rdng Reading
+	Usr  User
+}
+
+type Template struct {
+	templates *template.Template
+}
+
+type App struct {
+	Echo *echo.Echo
+	DB   *pg.DB
+}
+
+type Config struct {
+	Server Server `yaml:"server"`
+	DB     DB     `yaml:"db"`
+}
+
+type Server struct {
+	Debug bool   `yaml:"debug"`
+	Port  string `yaml:"port"`
+}
+
+type DB struct {
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+}
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
 }
 
 // Функция предоставляющая строковое представление структуры пользователя

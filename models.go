@@ -60,6 +60,8 @@ type Server struct {
 type DB struct {
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
+	Database string `yaml:"database"`
+	Addr     string `yaml:"addr"`
 }
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {

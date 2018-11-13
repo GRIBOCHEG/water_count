@@ -25,6 +25,8 @@ func initDB() {
 	app.DB = pg.Connect(&pg.Options{
 		User:     config.DB.User,
 		Password: config.DB.Password,
+		Database: config.DB.Database,
+		Addr:     config.DB.Addr,
 	})
 	err = createSchema(app.DB)
 	if err != nil {

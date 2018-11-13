@@ -147,5 +147,9 @@
 			"revisionTime": "2018-10-15T02:44:45Z"
 		}
 	],
-	"rootPath": "water_count"
+	"rootPath": "water_count",
+	"heroku": {
+        "install" : [ "./..." ],
+        "goVersion": "go1.11"
+         }
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -147,12 +148,13 @@ func usersList(c echo.Context) error {
 }
 
 func readingsList(c echo.Context) error {
-	users, err := getOnlyUsers(app.DB)
+	userID, err := strconv.Atoi(c.Param("id"))
+	readings, err := getReadingsByUserID(app.DB, int64(userID))
 	if err != nil {
 		fmt.Println(err)
 		return c.NoContent(http.StatusBadRequest)
 	}
-	return c.Render(http.StatusOK, "users", users)
+	return c.Render(http.StatusOK, "readings", readings)
 }
 
 func topConsumers(c echo.Context) error {

@@ -30,7 +30,7 @@ func router() {
 
 	u := app.Echo.Group("/user")
 	u.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-		SigningKey:  []byte("secret"),
+		SigningKey:  app.Slice,
 		TokenLookup: "cookie:token",
 	}))
 	u.GET("/changepass", func(c echo.Context) error {
@@ -44,7 +44,7 @@ func router() {
 
 	a := app.Echo.Group("/admin")
 	a.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-		SigningKey:  []byte("secret"),
+		SigningKey:  app.Slice,
 		TokenLookup: "cookie:token",
 	}))
 	a.Use(func(next echo.HandlerFunc) echo.HandlerFunc {

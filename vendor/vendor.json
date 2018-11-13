@@ -57,6 +57,18 @@
 			"revisionTime": "2018-11-10T19:01:00Z"
 		},
 		{
+			"checksumSHA1": "hSgHgBs8f+1dqGXjBw/sQ4pKUYg=",
+			"path": "github.com/labstack/echo/middleware",
+			"revision": "b37628bfc5b3b4e4f6c03a9540136254a918318c",
+			"revisionTime": "2018-11-10T19:01:00Z"
+		},
+		{
+			"checksumSHA1": "67WgYXAaI1iIhE2srTDfjXxUs7Q=",
+			"path": "github.com/labstack/gommon/bytes",
+			"revision": "7fd9f68ece0bcb1a905fac8f1549f0083f71c51b",
+			"revisionTime": "2018-11-10T20:33:03Z"
+		},
+		{
 			"checksumSHA1": "Yz8nRvgJR9qN9OORCUQKc4eHC7Q=",
 			"path": "github.com/labstack/gommon/color",
 			"revision": "7fd9f68ece0bcb1a905fac8f1549f0083f71c51b",
@@ -65,6 +77,12 @@
 		{
 			"checksumSHA1": "aPI7uE0fQNHFKVLP1pIY1fktoec=",
 			"path": "github.com/labstack/gommon/log",
+			"revision": "7fd9f68ece0bcb1a905fac8f1549f0083f71c51b",
+			"revisionTime": "2018-11-10T20:33:03Z"
+		},
+		{
+			"checksumSHA1": "JHmNB8lB6bAa9143TpXSRZknn0o=",
+			"path": "github.com/labstack/gommon/random",
 			"revision": "7fd9f68ece0bcb1a905fac8f1549f0083f71c51b",
 			"revisionTime": "2018-11-10T20:33:03Z"
 		},

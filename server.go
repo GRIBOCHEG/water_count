@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -8,7 +11,12 @@ import (
 
 func startServer() {
 	router()
-	app.Echo.Logger.Fatal(app.Echo.Start(config.Server.Port))
+	// app.Echo.Logger.Fatal(app.Echo.Start(":" + config.Server.Port))
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+	app.Echo.Logger.Fatal(app.Echo.Start(":" + port))
 }
 
 func router() {

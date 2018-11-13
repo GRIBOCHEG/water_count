@@ -41,8 +41,9 @@ type Template struct {
 }
 
 type App struct {
-	Echo *echo.Echo
-	DB   *pg.DB
+	Echo  *echo.Echo
+	DB    *pg.DB
+	Slice []byte
 }
 
 type Config struct {
@@ -51,8 +52,9 @@ type Config struct {
 }
 
 type Server struct {
-	Debug bool   `yaml:"debug"`
-	Port  string `yaml:"port"`
+	Debug  bool   `yaml:"debug"`
+	Port   string `yaml:"port"`
+	Secret string `yaml:"secret"`
 }
 
 type DB struct {

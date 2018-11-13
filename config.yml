@@ -1,6 +1,7 @@
 server:
   debug: true
   port: "1323"
+  secret: "somestring"
 db:
   user: "hiqdyvnzhgtyta"
   password: "ee8e39cfd44f38ee4d2c2c1d192c188ebe87da6c84cac64ea03399b3ee0d1b3e"

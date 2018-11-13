@@ -1,6 +1,7 @@
 package main
 
-func Init() {
+func init() {
+	app.Slice = []byte(config.Server.Secret)
 	initDB()
 	initServer()
 }

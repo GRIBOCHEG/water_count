@@ -1,39 +1,19 @@
 <html>
-  <title>Установка пароля</title>
-  <script type="text/javascript">
-    function loginClick() {
-      var xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4) {
-          if (this.status == 200) {
-            // alert(xhttp.response);
-            if (xhttp.responseText == "done") {
-                window.location = "/login";
-            }
-            //redirect
-            // window.location = xhttp.responseURL;
-          } else {
-            alert("bitch lasagna!");
-          }
-        }
-      };
-      xhttp.open("POST", "/user/changepass", true);
-      xhttp.setRequestHeader("Content-type", "application/json");
-      xhttp.send(
-        JSON.stringify({
-          password: document.getElementById("password").value
-        })
-      );
-    }
-  </script>
+  <head>
+      <title>Установка пароля</title>
+      <link rel="stylesheet" href="/static/css/style.css">
+      <script src="/static/js/scripts.js"></script>
+  </head>
   <body>
-    Укажите новый пароль
-    <div>
+    <h1 class='title'>Укажите новый пароль</h1>
+    <div class='form'>
       <div>
-        <label>Пароль</label>
-        <input type="password" name="password" id="password" /> <br />
+        <label class='label'>Пароль</label>
+        <input class='input' type="password" name="password" id="password" /> <br />
       </div>
-      <div><button onclick="loginClick()">Войти</button></div>
+    </div>
+    <div class='button-container'>
+      <button class='button' onclick="passClick()">Войти</button>
     </div>
   </body>
 </html>

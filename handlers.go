@@ -10,13 +10,30 @@ import (
 	"github.com/labstack/echo"
 )
 
+func generateToken(admin bool, login string) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["name"] = login
+	claims["admin"] = admin
+	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+
+	// Generate encoded token
+	t, err := token.SignedString(app.Slice)
+	if err != nil {
+		return "", err
+	}
+	return t, nil
+}
+
 func login(c echo.Context) error {
 	user := new(User)
 	err := c.Bind(user)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("try to login with", user.Login, user.Password)
+	if config.Server.Debug {
+		fmt.Println("try to login with", user.Login, user.Password)
+	}
 	usr, err := getUserByLogin(app.DB, user.Login)
 	if err != nil {
 		fmt.Println(err)
@@ -24,44 +41,14 @@ func login(c echo.Context) error {
 	}
 
 	if user.Password == usr.Password {
-		if usr.UserType == "admin" {
-			token := jwt.New(jwt.SigningMethodHS256)
 
-			// Set claims
-			claims := token.Claims.(jwt.MapClaims)
-			claims["name"] = usr.Name
-			claims["admin"] = true
-			claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
-
-			// Generate encoded token
-			t, err := token.SignedString(app.Slice)
-			if err != nil {
-				return err
-			}
-			cookie := new(http.Cookie)
-			cookie.Name = "token"
-			cookie.Value = t
-			cookie.Expires = time.Now().Add(24 * time.Hour)
-			c.SetCookie(cookie)
-			return c.String(http.StatusOK, "admin")
-		}
-
-		token := jwt.New(jwt.SigningMethodHS256)
-
-		// Set claims
-		claims := token.Claims.(jwt.MapClaims)
-		claims["name"] = usr.Name
-		claims["admin"] = false
-		claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
-
-		// Generate encoded token
-		t, err := token.SignedString(app.Slice)
+		token, err := generateToken(usr.UserType == "admin", usr.Login)
 		if err != nil {
 			return err
 		}
 		cookie := new(http.Cookie)
 		cookie.Name = "token"
-		cookie.Value = t
+		cookie.Value = token
 		cookie.Expires = time.Now().Add(24 * time.Hour)
 		c.SetCookie(cookie)
 
@@ -69,7 +56,7 @@ func login(c echo.Context) error {
 			return c.String(http.StatusOK, "pass")
 		}
 
-		return c.String(http.StatusOK, "user")
+		return c.String(http.StatusOK, usr.UserType)
 	}
 	return echo.ErrUnauthorized
 }
@@ -78,7 +65,7 @@ func setPassword(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	name := claims["name"].(string)
-	usr, err := getUserByName(app.DB, name)
+	usr, err := getUserByLogin(app.DB, name)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -100,7 +87,7 @@ func saveReading(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	name := claims["name"].(string)
-	usr, err := getUserByName(app.DB, name)
+	usr, err := getUserByLogin(app.DB, name)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -109,6 +96,7 @@ func saveReading(c echo.Context) error {
 	err = c.Bind(reading)
 	if err != nil {
 		fmt.Println(err)
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 
 	reading.UserID = usr.ID
@@ -158,22 +146,32 @@ func readingsList(c echo.Context) error {
 }
 
 func topConsumers(c echo.Context) error {
-	var data [3]Data
+
+	var data []Data
+
 	water := c.Param("water")
 	readings, err := getReadingsByTypeAndOrderByQuantity(app.DB, water)
-	fmt.Println(readings)
+	if config.Server.Debug {
+		fmt.Println(readings)
+	}
 	if err != nil {
 		fmt.Println(err)
 	}
-	for i, reading := range readings {
+	for _, reading := range readings {
 		user, err := getUserByID(app.DB, int(reading.UserID))
-		fmt.Println(user)
+		if config.Server.Debug {
+			fmt.Println(user)
+		}
 		if err != nil {
 			fmt.Println(err)
 		}
-		data[i].Rdng = reading
-		data[i].Usr = user
+		data = append(data, Data{
+			Rdng: reading,
+			Usr:  user,
+		})
 	}
-	fmt.Println(data)
+	if config.Server.Debug {
+		fmt.Println(data)
+	}
 	return c.Render(http.StatusOK, "consumers", data)
 }

@@ -11,15 +11,38 @@ import (
 
 func startServer() {
 	router()
-	// app.Echo.Logger.Fatal(app.Echo.Start(":" + config.Server.Port))
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("$PORT must be set")
+	if !config.Server.Debug {
+		port := os.Getenv("PORT")
+		if port == "" {
+			log.Fatal("$PORT must be set")
+		}
+		app.Echo.Use(middleware.Recover())
+		app.Echo.Logger.Fatal(app.Echo.Start(":" + port))
+	} else {
+		app.Echo.Use(middleware.Recover())
+		app.Echo.Logger.Fatal(app.Echo.Start(":" + config.Server.Port))
 	}
-	app.Echo.Logger.Fatal(app.Echo.Start(":" + port))
+}
+
+// middleware-функция, проверяющая привелегии пользователя
+func middlewarePrivelegeChecker(admin bool) func(echo.HandlerFunc) echo.HandlerFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			user := c.Get("user").(*jwt.Token)
+			claims := user.Claims.(jwt.MapClaims)
+			isadmin := claims["admin"].(bool)
+			if isadmin == admin {
+				return next(c)
+			}
+			return echo.ErrUnauthorized
+		}
+	}
 }
 
 func router() {
+
+	app.Echo.Static("/static", "assets")
+
 	app.Echo.GET("/", func(c echo.Context) error {
 		return c.File("views/index.html")
 	})
@@ -33,6 +56,9 @@ func router() {
 		SigningKey:  app.Slice,
 		TokenLookup: "cookie:token",
 	}))
+
+	u.Use(middlewarePrivelegeChecker(false))
+
 	u.GET("/changepass", func(c echo.Context) error {
 		return c.File("views/changepass.html")
 	})
@@ -47,17 +73,9 @@ func router() {
 		SigningKey:  app.Slice,
 		TokenLookup: "cookie:token",
 	}))
-	a.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			user := c.Get("user").(*jwt.Token)
-			claims := user.Claims.(jwt.MapClaims)
-			isadmin := claims["admin"].(bool)
-			if isadmin {
-				return next(c)
-			}
-			return echo.ErrUnauthorized
-		}
-	})
+
+	a.Use(middlewarePrivelegeChecker(true))
+
 	a.GET("/adminform", func(c echo.Context) error {
 		return c.File("views/adminform.html")
 	})

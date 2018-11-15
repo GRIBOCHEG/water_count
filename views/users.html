@@ -1,11 +1,16 @@
 {{define "users"}}
 <html>
+    <head>
+        <title>Пользователи</title>
+        <link rel="stylesheet" href="/static/css/style.css">
+    </head>
   <body>
-    <ul>
+    <h1 class='title'>Список пользователей</h1>
+    <div>
       {{range .}}
-      <li><a href=/admin/readinglist/{{.ID}}>{{.Name}}</li>
+      <p class='list'><a class='link' href=/admin/readinglist/{{.ID}}>{{.Name}} {{.Surname}} ({{.Login}})</p>
       {{end}}
-    </ul>
+    </div>
   </body>
 </html>
-{{ end }}
+{{end}}

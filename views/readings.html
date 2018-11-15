@@ -1,11 +1,27 @@
 {{define "readings"}}
 <html>
+  <head>
+      <title>Показания</title>
+      <link rel="stylesheet" href="/static/css/style.css">
+  </head>
   <body>
-    <ul>
-      {{range .}}
-      <li>Месяц: {{.Month}}, Показание счетчика: {{.Quantity}}, Тариф(вода): {{.Water}}</li>
-      {{end}}
-    </ul>
+    <h1 class='title'>Показания пользователя</h1>
+    <div class="table-container">
+      <table class='table'>
+        <tr>
+          <th>Месяц</th>
+          <th>Показание счетчика</th>
+          <th>Тариф(вода)</th>
+        </tr>
+        {{range .}}
+        <tr>
+          <td>{{.Month}}</td>
+          <td>{{.Quantity}}</td>
+          <td>{{.Water}}</td>
+        </tr>
+        {{end}}
+      </table>
+    </div>
   </body>
 </html>
 {{ end }}

@@ -1,11 +1,27 @@
 {{define "consumers"}}
 <html>
+  <head>
+      <title>Потребители</title>
+      <link rel="stylesheet" href="/static/css/style.css">
+  </head>
   <body>
-    <ul>
-      {{range .}}
-      <li>Показание счетчика: {{.Rdng.Quantity}}, Месяц: {{.Rdng.Month}}, Имя и фамилия пользователя: {{.Usr.Name}} {{.Usr.Surname}}</li>
-      {{end}}
-    </ul>
+    <h1 class='title'>Рейтинг потребителей</h1>
+    <div class="table-container">
+      <table class='table'>
+        <tr>
+          <th>Показание счетчика</th>
+          <th>Месяц</th>
+          <th>Имя и фамилия пользователя</th>
+        </tr>
+        {{range .}}
+        <tr>
+          <td>{{.Rdng.Quantity}}</td>
+          <td>{{.Rdng.Month}}</td>
+          <td>{{.Usr.Name}} {{.Usr.Surname}}</td>
+        </tr>
+        {{end}}
+      </table>
+    </div>
   </body>
 </html>
 {{ end }}

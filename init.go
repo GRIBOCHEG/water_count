@@ -1,14 +1,20 @@
 package main
 
-import (
-	"encoding/binary"
-	"time"
-)
+var initFunctions = []func() error{
+	initConfig,
+	initDB,
+	initServer,
+}
+
+func panicIfFailed(callback func() error) {
+	err := callback()
+	if err != nil {
+		panic(err)
+	}
+}
 
 func init() {
-	stamp := make([]byte, binary.MaxVarintLen64)
-	_ = binary.PutVarint(stamp, time.Now().UnixNano())
-	app.Slice = append(stamp, []byte(config.Server.Secret)...)
-	initDB()
-	initServer()
+	for _, initFunc := range initFunctions {
+		panicIfFailed(initFunc)
+	}
 }

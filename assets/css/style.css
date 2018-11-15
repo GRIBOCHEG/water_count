@@ -1,0 +1,102 @@
+body {
+    background: linear-gradient(0deg, rgb(24, 88, 172), rgb(182, 224, 248));
+    font-family: 'Calibri', sans-serif
+}
+
+.title {
+    font-size: 50px;
+    text-align: center;
+    margin-top: 200px;
+}
+
+.button-container {
+    text-align: center;
+}
+
+.button {
+    border: none;
+    border-radius: 10px;
+    padding: 8px 16px;
+    background-color: rgb(238, 238, 238);
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    font-size: 32px;
+    margin-top: 100px;
+}
+
+.button:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.1);
+}
+
+.form {
+    margin-top: 100px;
+    margin-left: calc(50% - 150px);
+}
+
+.label {
+    font-size: 28px;
+    display: block;
+}
+
+.input {
+    width: 300px;
+    height: 30px;
+    margin-bottom: 15px;
+}
+
+.link {
+    display: block;
+    color: #000000;
+    text-decoration: none;
+    font-size: 24px;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.link:hover {
+    color: blue;
+}
+
+.table-container {
+    text-align: center;
+  }
+
+.table {
+    margin-left: calc(50% - 250px);
+    width: 500px;
+    text-align: center;
+    border: 1px solid;
+}
+
+th {
+    font-size: 22px;  
+    border: 1px solid;
+}
+
+td {
+    font-size: 20px;  
+    border: 1px solid;
+}
+
+.login {
+    color: #000000;
+    text-decoration: none;
+}
+
+.radio-block {
+    margin-top: 30px;
+    width: 350px;
+    height: 30px;
+    background-color: #fff;
+}
+
+.radio {
+    font-size: 18px; 
+    display: inline;
+}
+
+.list {
+    text-align: center;
+}

@@ -52,7 +52,7 @@ func seedDB(db *pg.DB) error {
 		reading1 := &Reading{
 			Month:    "month",
 			Quantity: 100,
-			UserID:   user1.ID,
+			UserID:   1,
 			Water:    "cold",
 		}
 		err = db.Insert(reading1)
@@ -136,7 +136,7 @@ func getReadingsByTypeAndOrderByQuantity(db *pg.DB, water string) ([]Reading, er
 
 func createUser(db *pg.DB, user *User) error {
 	_, err := db.QueryOne(user, `
-		INSERT INTO users (name, surname, address, login, password, init) VALUES (?name, ?surname, ?address, ?login, ?password, ?init)
+		INSERT INTO users (name, surname, address, login, password, init, user_type) VALUES (?name, ?surname, ?address, ?login, ?password, ?init, ?user_type)
 		RETURNING id
 	`, user)
 	return err

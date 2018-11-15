@@ -1,48 +1,24 @@
 <html>
-  <title>Вход</title>
-  <script type="text/javascript">
-    function loginClick() {
-      var xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4) {
-          if (this.status == 200) {
-            // alert(xhttp.response);
-            if (xhttp.responseText == "admin") {
-                window.location = "/admin/adminform";
-            } else if (xhttp.responseText == "user") {
-                window.location = "/user/userform";
-            } else if (xhttp.responseText == "pass") {
-                window.location = "/user/changepass";
-            }
-            //redirect
-            // window.location = xhttp.responseURL;
-          } else {
-            alert("bitch lasagna!");
-          }
-        }
-      };
-      xhttp.open("POST", "/login", true);
-      xhttp.setRequestHeader("Content-type", "application/json");
-      xhttp.send(
-        JSON.stringify({
-          login: document.getElementById("login").value,
-          password: document.getElementById("password").value
-        })
-      );
-    }
-  </script>
+  <head>
+      <title>Вход</title>
+      <link rel="stylesheet" href="/static/css/style.css">
+      <script src="/static/js/scripts.js"></script>
+  </head>
   <body>
-    Вход в систему
-    <div>
-      <div>
-        <label>Логин</label> <input type="text" name="login" id="login" />
+    <h1 class='title'>Вход в систему</h1>
+    <div class='form'>
+      <div class='form-log'>
+        <label class='label'>Логин</label>
+        <input class='input' type="text" name="login" id="login" />
         <br />
       </div>
-      <div>
-        <label>Пароль</label>
-        <input type="password" name="password" id="password" /> <br />
+      <div class='form-pass'>
+        <label class='label'>Пароль</label>
+        <input class='input' type="password" name="password" id="password" /><br />
       </div>
-      <div><button onclick="loginClick()">Войти</button></div>
+    </div>
+    <div class='button-container'>
+      <button class='button' onclick="loginClick()">Войти</button>
     </div>
   </body>
 </html>

@@ -1,5 +1,5 @@
 server:
-  debug: true
+  debug: false
   port: "1323"
   secret: "somestring"
 db:
@@ -7,3 +7,8 @@ db:
   password: "ee8e39cfd44f38ee4d2c2c1d192c188ebe87da6c84cac64ea03399b3ee0d1b3e"
   database: "d3f5aactiva2t0"
   addr: "ec2-75-101-138-165.compute-1.amazonaws.com:5432"
+
+  # user: "postgres"
+  # password: "1234"
+  # database: "postgres"
+  # addr: "localhost:5432"

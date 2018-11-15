@@ -1,52 +1,51 @@
 <html>
-    <title>Форма</title>
-    <script type="text/javascript">
-        function addRClick() {
-          var xhttp = new XMLHttpRequest();
-          xhttp.onreadystatechange = function() {
-            if (this.readyState == 4) {
-              if (this.status == 200) {
-                if (xhttp.responseText == "good") {
-                    alert("Показание успешно сохранено");
-                } else if (xhttp.responseText == "bad") {
-                    alert("Такое показание уже существует в системе");
-                }
-              } else {
-                alert("bitch lasagna!");
-              }
-            }
-          };
-          xhttp.open("POST", "/user/userform", true);
-          xhttp.setRequestHeader("Content-type", "application/json");
-          xhttp.send(
-            JSON.stringify({
-                month: document.getElementById("month").value,
-                quantity: document.getElementById("quantity").value,
-                water: document.getElementById("water").value
-            })
-          );
-        }
-    </script>
-    <body> Прием показаний счетчиков
-        <div>
+    <head>
+        <title>Форма</title>
+        <link rel="stylesheet" href="/static/css/style.css">
+        <script src="/static/js/scripts.js"></script>
+    </head>
+    <body> 
+        <h1 class='title'>Прием показаний счетчиков</h1>
+        <div class='form'>
             <div>
-                <label>Месяц</label>
-                <input type="text" name="month" id="month">
-                <br>
+                <label class='label'>Месяц:</label>
+                <p>
+                    <select class='input' type="text" name="month" id="month">
+                        <option value="Январь">Январь</option>
+                        <option selected value="Февраль">Февраль</option>
+                        <option value="Март">Март</option>
+                        <option value="Апрель">Апрель</option>
+                        <option value="Май">Май</option>
+                        <option selected value="Июнь">Июнь</option>
+                        <option value="Июль">Июль</option>
+                        <option value="Август">Август</option>
+                        <option value="Сентябрь">Сентябрь</option>
+                        <option value="Октябрь">Октябрь</option>
+                        <option selected value="Ноябрь">Ноябрь</option>
+                        <option value="Декабрь">Декабрь</option>
+                    </select>
+                </p>
             </div>
             <div>
-                <label>Показание счетчика</label>
-                <input type="text" name="quantity" id="quantity">
-                <br>
+                <label class='label'>Показание счетчика:</label>
+                <input class='input' type="text" name="quantity" id="quantity">
             </div>
             <div>
-                <label>Тариф(горячая или холодная вода)</label>
-                <input type="text" name="water" id="water" value="hot||cold">
-                <br>
+                <label class='label'>Тариф (горячая или холодная вода):</label>
+                <div class="radio-block">
+                    <p class='radio'>
+                        <input type="radio" name="water" id="water_hot" value="hot">
+                        Горячая вода
+                    </p>
+                    <p class='radio'>
+                        <input type="radio" name="water" id="water_cold" value="cold">
+                        Холодная вода
+                    </p>
                 </div>
-            <div>
-                <button onclick="addRClick()">Сохранить</button>
             </div>
+        </div>
+        <div class='button-container'>
+            <button class='button' onclick="addRClick()">Сохранить</button>
         </div>
     </body>
 </html>

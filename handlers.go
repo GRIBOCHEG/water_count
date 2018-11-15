@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo"
 )
 
+//Генерируем токен и наполняем его необходимыми данными
 func generateToken(admin bool, login string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
@@ -17,7 +18,6 @@ func generateToken(admin bool, login string) (string, error) {
 	claims["admin"] = admin
 	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
 
-	// Generate encoded token
 	t, err := token.SignedString(app.Slice)
 	if err != nil {
 		return "", err

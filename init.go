@@ -13,6 +13,7 @@ func panicIfFailed(callback func() error) {
 	}
 }
 
+//Функция инициализации приложения, выполняется до вызова main
 func init() {
 	for _, initFunc := range initFunctions {
 		panicIfFailed(initFunc)

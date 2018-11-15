@@ -20,7 +20,7 @@ func createSchema(db *pg.DB) error {
 	return nil
 }
 
-// seedDB - Наполняем дб тестовыми данными
+// seedDB - наполняем БД данными
 func seedDB(db *pg.DB) error {
 	if config.Server.Debug {
 		user1 := &User{
@@ -145,15 +145,6 @@ func createUser(db *pg.DB, user *User) error {
 func createReading(db *pg.DB, reading *Reading) error {
 	_, err := db.QueryOne(reading, `
 		INSERT INTO readings (month, quantity, user_id, water) VALUES (?month, ?quantity, ?user_id, ?water)
-		RETURNING id
-	`, reading)
-	return err
-}
-
-func createReadingFromForm(db *pg.DB, month, water string, quantity int, userid int64) error {
-	var reading Reading
-	_, err := db.QueryOne(reading, `
-		INSERT INTO readings (month, quantity, userid, water) VALUES (?month, ?quantity, ?userid, ?water)
 		RETURNING id
 	`, reading)
 	return err

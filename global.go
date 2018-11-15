@@ -14,6 +14,7 @@ import (
 var app App
 var config Config
 
+//Считывание конфиг файла, и формирование секрета для дальнейшей генерации токена
 func initConfig() error {
 	source, err := ioutil.ReadFile("config.yml")
 	if err != nil {

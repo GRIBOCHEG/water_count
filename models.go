@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-// User - модель описывающая пользователя sql:"unique" sql:"pk"
+// User - модель описывающая пользователя, так же является основой для генерации структуры таблицы users в БД
 type User struct {
 	ID       int64  `sql:",pk" json:"id" form:"id"`
 	Name     string `json:"name" form:"name"`
@@ -22,7 +22,7 @@ type User struct {
 	Init     bool   `json:"init" form:"init"`
 }
 
-// Reading - модель описывающая показания счетчика
+// Reading - модель описывающая показания счетчика, так же является основой для генерации структуры таблицы readings в БД
 type Reading struct {
 	ID       int64  `sql:",pk" json:"id" form:"id"`
 	Month    string `sql:"unique:user_month_water" json:"month" form:"month"`
@@ -31,32 +31,38 @@ type Reading struct {
 	Water    string `sql:"unique:user_month_water" json:"water" form:"water"`
 }
 
+//Data - модель для вывода данных в шаблон крупнейших потребителей
 type Data struct {
 	Rdng Reading
 	Usr  User
 }
 
+//Template - модель шаблона
 type Template struct {
 	templates *template.Template
 }
 
+//App - модель глобального объекта приложения
 type App struct {
 	Echo  *echo.Echo
 	DB    *pg.DB
 	Slice []byte
 }
 
+//Config - модель данных для обработки config файла
 type Config struct {
 	Server Server `yaml:"server"`
 	DB     DB     `yaml:"db"`
 }
 
+//Server - описывает настройки сервера
 type Server struct {
 	Debug  bool   `yaml:"debug"`
 	Port   string `yaml:"port"`
 	Secret string `yaml:"secret"`
 }
 
+//DB - описывает настройки бд
 type DB struct {
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
@@ -64,6 +70,7 @@ type DB struct {
 	Addr     string `yaml:"addr"`
 }
 
+//Render - функция наполняет шаблон данными
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
